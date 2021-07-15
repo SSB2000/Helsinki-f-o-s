@@ -20,9 +20,7 @@ const notes = [
     date: '2019-05-30T19:20:14.298Z',
     important: true
   }
-]
-
-ReactDOM.render(
+];ReactDOM.render(
   <App notes={notes} />,
   document.getElementById('root')
 )
