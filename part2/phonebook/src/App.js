@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PersonInfo from "./Components/PersonInfo";
 import PersonForm from "./Components/PersonForm";
 import axios from 'axios'
@@ -14,7 +14,7 @@ const App = () => {
         });
     }
 
-    useState(hook, []);
+    useEffect(hook, [])
 
     const addPerson = (event) => {
         event.preventDefault();
