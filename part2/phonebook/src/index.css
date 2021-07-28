@@ -1,0 +1,24 @@
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.error {
+	border: 2px red solid;
+	padding: 0.5em;
+	font-size: 1em;
+	color: red;
+	border-radius: 5px;
+}
+
+.success {
+	border: 2px green solid;
+	padding: 0.5em;
+	font-size: 1em;
+	color: green;
+	font-weight: 500;
+	border-radius: 5px;
+}

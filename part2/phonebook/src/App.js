@@ -3,20 +3,22 @@ import PersonInfo from "./Components/PersonInfo";
 import PersonForm from "./Components/PersonForm";
 import personService from "./services/person";
 import person from "./services/person";
-import axios from "axios";
+import "./index.css";
+import Notification from "./Components/Notification";
 // import Search from "./Components/Search";
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
-
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const hook = () => {
         personService
             .getAll()
-            .then(initialPersons => setPersons(initialPersons));
-    }
+            .then((initialPersons) => setPersons(initialPersons));
+    };
 
-    useEffect(hook, [])
+    useEffect(hook, []);
 
     const addPerson = (event) => {
         event.preventDefault();
@@ -25,29 +27,48 @@ const App = () => {
             number: newNumber,
         };
         if (persons.find((person) => person.name === newName)) {
-            alert(`${newName} already exists in the phonebook. Replace the old number with new one?`);
-            const duplicatePerson = persons.find((person) => person.name === newName);
-            const updatedPerson = { ...duplicatePerson, number: newNumber};
+            alert(
+                `${newName} already exists in the phonebook. Replace the old number with new one?`
+            );
+            const duplicatePerson = persons.find(
+                (person) => person.name === newName
+            );
+            const updatedPerson = { ...duplicatePerson, number: newNumber };
             personService
                 .updateNumber(updatedPerson)
-                .then(returnedPerson => {
-                    setPersons(persons.map(person => 
-                            person.name !== newName
-                            ? person
-                            : returnedPerson
-                        ))
+                .then((returnedPerson) => {
+                    setPersons(
+                        persons.map((person) =>
+                            person.name !== newName ? person : returnedPerson
+                        )
+                    );
                 })
-                .catch(err => {
-                    alert(`${newName} does not exists in the phonebook.`);
+                .catch((err) => {
+                    setMessage(`${newName} does not exists in the phonebook.`);
+                    setMessageType("error");
+                    setTimeout(() => {
+                        setMessage(null);
+                        setMessageType(null);
+                        setNewName("");
+                        setNewNumber("");
+                    }, 4000);
                 });
 
-            return;            
+            return;
         }
 
         personService
             .createPerson(newPersonObject)
-            .then(returnedPerson => {
-                setPersons(persons.concat(returnedPerson))
+            .then((returnedPerson) => {
+                setPersons(persons.concat(returnedPerson));
+            })
+            .then(() => {
+                setMessage(`${newName} is added!`);
+                setMessageType("success");
+                setTimeout(() => {
+                    setMessage(null);
+                    setMessageType(null);
+                }, 4000);
             });
 
         // setPersons(persons.concat(newPersonObject));
@@ -65,23 +86,37 @@ const App = () => {
     };
 
     const handleDelete = (id) => {
-        const toDelete = persons.find(person => person.id === id);
+        const toDelete = persons.find((person) => person.id === id);
         if (window.confirm(`Delete ${toDelete.name} ?`)) {
             personService
-            .deletePerson(id)
-            .then(() => {
-                setPersons(persons.filter(person => person.id !== id));
-            })
-            .catch(err => {
-                alert(`${toDelete} was already deleted!`);
-                setPersons(person.filter(person => person.id !== id));
-            });
+                .deletePerson(id)
+                .then(() => {
+                    setPersons(persons.filter((person) => person.id !== id));
+                })
+                .then(() => {
+                    setMessage(`${toDelete.name} is deleted!`);
+                    setMessageType("success");
+                    setTimeout(() => {
+                        setMessage(null);
+                        setMessageType(null);
+                    }, 4000);
+                })
+                .catch((err) => {
+                    setMessage(`${toDelete.name} was already deleted!`);
+                    setMessageType("success");
+                    setTimeout(() => {
+                        setMessage(null);
+                        setMessageType(null);
+                    }, 4000);
+                    setPersons(person.filter((person) => person.id !== id));
+                });
         }
-    }
+    };
 
     return (
         <div>
-            <h2>Phonebook</h2>
+            <h1>Phonebook</h1>
+            <Notification message={message} type={messageType} />
             {/* <Search persons={persons} /> */}
             <PersonForm
                 newName={newName}
@@ -93,8 +128,8 @@ const App = () => {
             <h2>Numbers</h2>
             <ul>
                 {persons.map((person) => (
-                    <PersonInfo 
-                        key={person.id} 
+                    <PersonInfo
+                        key={person.id}
                         person={person}
                         handleDelete={handleDelete}
                     />
