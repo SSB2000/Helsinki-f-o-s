@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import PersonInfo from "./Components/PersonInfo";
 import PersonForm from "./Components/PersonForm";
 import personService from "./services/person";
-import axios from "axios";
 import person from "./services/person";
+import axios from "axios";
 // import Search from "./Components/Search";
 const App = () => {
     const [persons, setPersons] = useState([]);
@@ -20,17 +20,32 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault();
-        if (persons.find((person) => person.name === newName)) {
-            alert(`${newName} already added to phonebook. Try another name.`);
-            return;
-        }
         const newPersonObject = {
             name: newName,
             number: newNumber,
         };
+        if (persons.find((person) => person.name === newName)) {
+            alert(`${newName} already exists in the phonebook. Replace the old number with new one?`);
+            const duplicatePerson = persons.find((person) => person.name === newName);
+            const updatedPerson = { ...duplicatePerson, number: newNumber};
+            personService
+                .updateNumber(updatedPerson)
+                .then(returnedPerson => {
+                    setPersons(persons.map(person => 
+                            person.name !== newName
+                            ? person
+                            : returnedPerson
+                        ))
+                })
+                .catch(err => {
+                    alert(`${newName} does not exists in the phonebook.`);
+                });
+
+            return;            
+        }
 
         personService
-            .create(newPersonObject)
+            .createPerson(newPersonObject)
             .then(returnedPerson => {
                 setPersons(persons.concat(returnedPerson))
             });
@@ -55,7 +70,11 @@ const App = () => {
             personService
             .deletePerson(id)
             .then(() => {
-                setPersons(persons.filter(person => person.id !== id))
+                setPersons(persons.filter(person => person.id !== id));
+            })
+            .catch(err => {
+                alert(`${toDelete} was already deleted!`);
+                setPersons(person.filter(person => person.id !== id));
             });
         }
     }

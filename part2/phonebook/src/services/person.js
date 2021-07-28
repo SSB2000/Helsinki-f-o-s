@@ -7,14 +7,18 @@ const getAll = () => {
 	return request.then(response => response.data);
 }
 
-const create = (personObject) => {
+const createPerson = (personObject) => {
 	const request = axios.post(baseUrl, personObject);
 	return request.then(response => response.data);
 }
 
 const deletePerson = (id) => {
 	return axios.delete(`http://localhost:3001/persons/${id}`)
-	
 }
 
-export default { getAll, create, deletePerson }
+const updateNumber = (person) => {
+	const request = axios.put(`${baseUrl}/${person.id}`, person)
+	return request.then(response => response.data);
+}
+
+export default { getAll, createPerson, deletePerson, updateNumber }
