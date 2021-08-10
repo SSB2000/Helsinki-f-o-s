@@ -15,7 +15,10 @@ const App = () => {
     const hook = () => {
         personService
             .getAll()
-            .then((initialPersons) => setPersons(initialPersons));
+            .then((initialPersons) => setPersons(initialPersons))
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     useEffect(hook, []);
@@ -44,7 +47,7 @@ const App = () => {
                     );
                 })
                 .catch((err) => {
-                    setMessage(`${newName} does not exists in the phonebook.`);
+                    setMessage(`${newName} does not exists in the phone book.`);
                     setMessageType("error");
                     setTimeout(() => {
                         setMessage(null);
@@ -108,7 +111,7 @@ const App = () => {
                         setMessage(null);
                         setMessageType(null);
                     }, 4000);
-                    setPersons(person.filter((person) => person.id !== id));
+                    setPersons(persons.filter((person) => person.id !== id));
                 });
         }
     };
